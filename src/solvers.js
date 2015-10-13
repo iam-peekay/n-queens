@@ -21,7 +21,6 @@ window.findNRooksSolution = function(n) {
 
 window.countNRooksSolutions = function(n) {
   return NSolver(n, true);
-
 };
 
 
@@ -57,16 +56,17 @@ var NSolver = function(n, isRooks, singleSolution) {
   };
 
   var buildMatrix = function(arr) {
-    var length = arr.length;
-    var board = new Array(length) ;
-    for (var j = 0; j < length; j++) {
-      board[j] = new Array(length);
-      for (var k = 0; k < length; k++) {
+    var board = new Array(n) ;
+    for (var j = 0; j < n; j++) {
+      board[j] = new Array(n);
+      for (var k = 0; k < n; k++) {
         board[j][k] = 0;
       }
     }
-    for (var i = 0; i < length; i++) {
-      board[arr[i]][i] = 1;
+    if (arr) {
+      for (var i = 0; i < n; i++) {
+        board[arr[i]][i] = 1;
+      }
     }
     return board;
   };
