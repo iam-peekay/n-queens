@@ -16,158 +16,83 @@
 
 
 window.findNRooksSolution = function(n) {
-    // build the board
-  var board = new Board({'n': n});
-  var count = 0;
-
-  // helper function takes in current board
-  var backTracker = function(board, n) {
-      // we randomly generate a new [row, index]
-    // debugger;
-    var randCol = Math.floor(Math.random() * n);
-    var randRow = Math.floor(Math.random() * n);
-    // add the new tester rook to the board
-    if (!board.get(randRow)[randCol] ) {
-    board.get(randRow)[randCol] = 1;
-    // test for row or column collision
-    if (board.hasAnyRowConflicts() || board.hasAnyColConflicts()) {
-      // else, backtrack  
-      board.get(randRow)[randCol] = 0;
-    } else {
-      // if none, keep the current rook
-      // increment count
-      count++;
-    }
-  }
+    return NSolver(n, true, true);
 };
 
-  while(count < n) {
-    backTracker(board, n);
-  }
-
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(board.rows()));
-  return board.rows();
-};
-
-return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
   return NSolver(n, true);
-  };
 
-  looper(0);
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  
-  return solutionCount;
 };
 
-var hasRooksConflicts = function(board) {
 
-  if (board.hasAnyRowConflicts() || board.hasAnyColConflicts()) {
-    return true;
-  }
-  return false;
-};
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var board = new Board({n: n});
-  var solution;
-  var looper = function(row) {
-    if (hasQueensConflicts(board)) {
-      return;
-    }
-    if (row === n) {
-      solution = board.rows().slice();
-      return;
-    }
-
-    for (var i = 0; i < n; i++) {
-      board.get(row)[i] = 1;
-      looper(row + 1);
-    if (solution) {  return; }
-      board.get(row)[i] = 0;
-    }
-  };
-
-  looper(0);
-  return solution;
+  return NSolver(n, false, true);
 
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var board = new Board({n: n});
-  var solutionCount = 0;
-  debugger;
-  var looper = function(row) {
-    if (hasQueensConflicts(board)) {
-      return;
-    }
-    
-    if (row === n) {
-      solutionCount++;
-      return;
-    }
-
-    for (var i = 0; i < n; i++) {
-      board.get(row)[i] = 1;
-      looper(row + 1);
-      board.get(row)[i] = 0;
-    }
-  };
-
-  looper(0);
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  
-  return solutionCount;
-};
-
-var hasQueensConflicts = function(board) {
-
-  if (board.hasAnyRowConflicts() || board.hasAnyColConflicts() || board.hasAnyMajorDiagonalConflicts() || board.hasAnyMinorDiagonalConflicts()) {
-    return true;
-  }
-  return false;
+  return NSolver(n, false);
 };
 
 
-var NSolver = function(n, isRooks) {
+
+var NSolver = function(n, isRooks, singleSolution) {
   var solution = [];
   var solutionCount = 0;
+  var solutionArr ;
 
-  var noConflicts = function (row) {
+  var noConflicts = function(row) {
     var testU = row;
     var testD = row;
     for (var i = solution.length - 1; i >= 0; i--) {
       testU++;
       testD--;
-      if(solution[i] === testD || solution[i] === testU){
+      if (solution[i] === testD || solution[i] === testU) {
         return false;
       }
     }
-     return true;
-   };
+    return true;
+  };
 
-  // recursive fn
- 
+  var buildMatrix = function(arr) {
+    var length = arr.length;
+    var board = new Array(length) ;
+    for (var j = 0; j < length; j++) {
+      board[j] = new Array(length);
+      for (var k = 0; k < length; k++) {
+        board[j][k] = 0;
+      }
+    }
+    for (var i = 0; i < length; i++) {
+      board[arr[i]][i] = 1;
+    }
+    return board;
+  };
+
   var recursive = function() {
     if (solution.length === n) {
-      solutionCount++;
+      if(singleSolution){
+        solutionArr = solution.slice();
+      }else{
+        solutionCount++;
+      }
       return;
     }
     // loop to all rows in next col
     for (var i = 0; i < n; i++) {
-    // check for collisions
-    if (!_.contains(solution, i) && (isRooks || noConflicts(i))) {
-      solution.push(i);
-      recursive();
-      solution.pop();
+      // check for collisions
+      if (!solutionArr && !_.contains(solution, i) && (isRooks || noConflicts(i))) {
+        solution.push(i);
+        recursive();
+        solution.pop();
+      }
+
     }
-  }
   };
   recursive();
 
-  return solutionCount;
+  return singleSolution? buildMatrix(solutionArr):solutionCount;
 };
 
-
-NSolver(5, false);
