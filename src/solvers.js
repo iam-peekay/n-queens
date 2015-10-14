@@ -38,10 +38,14 @@ window.countNQueensSolutions = function(n) {
 
 
 var NSolver = function(n, isRooks, singleSolution) {
+  // variable to hold an array of the solution
   var solution = [];
+  // counter variable for # of solutions
   var solutionCount = 0;
+  // variable to hold temp solution array if we need to build a matrix
   var solutionArr ;
 
+  // function to determine if a conflict exists in the current row count (check all previous rows placed)
   var noConflicts = function(row) {
     var testU = row;
     var testD = row;
@@ -72,18 +76,24 @@ var NSolver = function(n, isRooks, singleSolution) {
   };
 
   var recursive = function() {
+    // if we have an array of length n
     if (solution.length === n) {
+      // if we need a output matrix single solution, we turn the current solution into an array
       if(singleSolution){
         solutionArr = solution.slice();
-      }else{
+      }else{ // else, if we only need to keep track of the count, we increment count 
         solutionCount++;
       }
       return;
     }
-    // loop to all rows in next col
+
+    debugger;
+    // loop to all rows in next column
     for (var i = 0; i < n; i++) {
-      // check for collisions
+      // check for collisions AND check if it's EITHER rooks (i.e. in which case we don't need diagonal conflict check) 
+      // OR if it's not rooks we do need to check diagonal (i.e. noConflicts function check)
       if (!solutionArr && !_.contains(solution, i) && (isRooks || noConflicts(i))) {
+        // if all above pass, push the current i into solution and recurse to go to next i
         solution.push(i);
         recursive();
         solution.pop();
