@@ -16,32 +16,93 @@
 
 
 window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
-
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  return solution;
+    return NSolver(n, true, true);
 };
 
-// return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solution = undefined; //fixme
-
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  return NSolver(n, true);
 };
+
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  return NSolver(n, false, true);
 
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution;
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solution = undefined; //fixme
-
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
+  return NSolver(n, false);
 };
+
+
+
+var NSolver = function(n, isRooks, singleSolution) {
+  // variable to hold an array of the solution
+  var solution = [];
+  // counter variable for # of solutions
+  var solutionCount = 0;
+  // variable to hold temp solution array if we need to build a matrix
+  var solutionArr ;
+
+  // function to determine if a conflict exists in the current row count (check all previous rows placed)
+  var noConflicts = function(row) {
+    var testU = row;
+    var testD = row;
+    for (var i = solution.length - 1; i >= 0; i--) {
+      testU++;
+      testD--;
+      if (solution[i] === testD || solution[i] === testU) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  var buildMatrix = function(arr) {
+    var board = new Array(n) ;
+    for (var j = 0; j < n; j++) {
+      board[j] = new Array(n);
+      for (var k = 0; k < n; k++) {
+        board[j][k] = 0;
+      }
+    }
+    if (arr) {
+      for (var i = 0; i < n; i++) {
+        board[arr[i]][i] = 1;
+      }
+    }
+    return board;
+  };
+
+  var recursive = function() {
+    // if we have an array of length n
+    if (solution.length === n) {
+      // if we need a output matrix single solution, we turn the current solution into an array
+      if(singleSolution){
+        solutionArr = solution.slice();
+      }else{ // else, if we only need to keep track of the count, we increment count 
+        solutionCount++;
+      }
+      return;
+    }
+
+    debugger;
+    // loop to all rows in next column
+    for (var i = 0; i < n; i++) {
+      // check for collisions AND check if it's EITHER rooks (i.e. in which case we don't need diagonal conflict check) 
+      // OR if it's not rooks we do need to check diagonal (i.e. noConflicts function check)
+      if (!solutionArr && !_.contains(solution, i) && (isRooks || noConflicts(i))) {
+        // if all above pass, push the current i into solution and recurse to go to next i
+        solution.push(i);
+        recursive();
+        solution.pop();
+      }
+
+    }
+  };
+  recursive();
+
+  return singleSolution? buildMatrix(solutionArr):solutionCount;
+};
+
