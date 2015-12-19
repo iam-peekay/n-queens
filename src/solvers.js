@@ -6,13 +6,7 @@
 
 */
 
-// hint: you'll need to do a full-search of all possible arrangements of pieces!
-// (There are also optimizations that will allow you to skip a lot of the dead search space)
-// take a look at solversSpec.js to see what the tests are expecting
-
-
-// return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
-
+// Returns a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
 
 window.findNRooksSolution = function(n) {
@@ -34,8 +28,6 @@ window.findNQueensSolution = function(n) {
 window.countNQueensSolutions = function(n) {
   return NSolver(n, false);
 };
-
-
 
 var NSolver = function(n, isRooks, singleSolution) {
   // variable to hold an array of the solution
@@ -59,6 +51,7 @@ var NSolver = function(n, isRooks, singleSolution) {
     return true;
   };
 
+  // Helper function to build up the board as an array of arrays
   var buildMatrix = function(arr) {
     var board = new Array(n) ;
     for (var j = 0; j < n; j++) {
@@ -75,22 +68,23 @@ var NSolver = function(n, isRooks, singleSolution) {
     return board;
   };
 
+  // We use a backtracking approach
+  // Since we know that each row can at most have 1 item, we can use the approach below of just going through each row once and placing an item, then moving onto the next row and so on until there is a conflict (in which case you exit) or you reach the last row without conflicts (in which case you have one solution)
   var recursive = function() {
     // if we have an array of length n
     if (solution.length === n) {
       // if we need a output matrix single solution, we turn the current solution into an array
       if(singleSolution){
         solutionArr = solution.slice();
-      }else{ // else, if we only need to keep track of the count, we increment count 
+      }else{ // else, if we only need to keep track of the count, we increment count
         solutionCount++;
       }
       return;
     }
 
-    debugger;
     // loop to all rows in next column
     for (var i = 0; i < n; i++) {
-      // check for collisions AND check if it's EITHER rooks (i.e. in which case we don't need diagonal conflict check) 
+      // check for collisions AND check if it's EITHER rooks (i.e. in which case we don't need diagonal conflict check)
       // OR if it's not rooks we do need to check diagonal (i.e. noConflicts function check)
       if (!solutionArr && !_.contains(solution, i) && (isRooks || noConflicts(i))) {
         // if all above pass, push the current i into solution and recurse to go to next i
@@ -105,4 +99,3 @@ var NSolver = function(n, isRooks, singleSolution) {
 
   return singleSolution? buildMatrix(solutionArr):solutionCount;
 };
-

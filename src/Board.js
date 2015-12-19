@@ -1,6 +1,6 @@
-// This file is a Backbone Model (don't worry about what that means)
+// This file is a Backbone Model
 // It's part of the Board Visualizer
-// The only portions you need to work on are the helper functions (below)
+// Helper functions below are used for building up the n-queens solution
 
 (function() {
 
@@ -18,12 +18,14 @@
       }
     },
 
+    // Get all the rows on the board
     rows: function() {
       return _(_.range(this.get('n'))).map(function(rowIndex) {
         return this.get(rowIndex);
       }, this);
     },
 
+    // Toggles a piece on the board
     togglePiece: function(rowIndex, colIndex) {
       this.get(rowIndex)[colIndex] = + !this.get(rowIndex)[colIndex];
       this.trigger('change');
@@ -54,6 +56,7 @@
       return this.hasAnyRooksConflicts() || this.hasAnyMajorDiagonalConflicts() || this.hasAnyMinorDiagonalConflicts();
     },
 
+    // Checks that the current position is within the bounds of the board.
     _isInBounds: function(rowIndex, colIndex) {
       return (
         0 <= rowIndex && rowIndex < this.get('n') &&
@@ -61,18 +64,6 @@
       );
     },
 
-
-/*
-         _             _     _
-     ___| |_ __ _ _ __| |_  | |__   ___ _ __ ___ _
-    / __| __/ _` | '__| __| | '_ \ / _ \ '__/ _ (_)
-    \__ \ || (_| | |  | |_  | | | |  __/ | |  __/_
-    |___/\__\__,_|_|   \__| |_| |_|\___|_|  \___(_)
-
- */
-    /*=========================================================================
-    =                 TODO: fill in these Helper Functions                    =
-    =========================================================================*/
 
     // ROWS - run from left to right
     // --------------------------------------------------------------
@@ -149,7 +140,7 @@
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
       var maxN = this.get('n') -1;
-      // the potential "majorDiagonalColumnIndexAtFirstRow" to be passed in ranges 
+      // the potential "majorDiagonalColumnIndexAtFirstRow" to be passed in ranges
       // from -2 to 2, so we can use the helper function above to iterator through
       // to check for conflicts
       for (var i = -maxN; i <= maxN; i++) {
@@ -167,16 +158,8 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      // var len = this.get('n');
-      // var board = this.rows();
-      // var row = minorDiagonalColumnIndexAtFirstRow > len ? minorDiagonalColumnIndexAtFirstRow - len : 0;
-      // var col = minorDiagonalColumnIndexAtFirstRow > len ? len : minorDiagonalColumnIndexAtFirstRow;
        var count = 0;
-      // while(this._isInBounds(row,col)){
-      //   count += board[row++][col--];
-      // }
-      // return count > 1 ;
-      // //
+
       for (var i = 0; i < this.get('n'); i++) {
         if (this._isInBounds(i, minorDiagonalColumnIndexAtFirstRow - i)) {
           count += this.get(i)[minorDiagonalColumnIndexAtFirstRow - i];
@@ -192,7 +175,7 @@
           return true;
         }
       }
-      return false; // fixme
+      return false;
     }
     /*--------------------  End of Helper Functions  ---------------------*/
 
